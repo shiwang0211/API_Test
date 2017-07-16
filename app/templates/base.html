@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ToDo API Client Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+
+<body>
+	{% if not session.logged_in %}
+    	<a href="{{ url_for('login') }}">log in</a>
+  	{% else %}
+    	<a href="{{ url_for('logout') }}">log out</a>
+  	{% endif %}
+
+  	{% for message in get_flashed_messages() %}
+    	<div class=flash>{{ message }}</div>
+  	{% endfor %}
+
+    <script type="text/javascript">
+
+    </script>
+
+
+	{% block content %}
+	{% endblock %}
+
+	{% block body %}
+	{% endblock %}
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
