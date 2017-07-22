@@ -1,21 +1,44 @@
 {% extends "base.html" %}
 {% block body %}
   {% if session.logged_in %}
+
+    <h2> The following map shows the locations of the first 10 signal heads</h2>
+
+	{{mymap.html}}
+
+    <h2> The following table shows the top 10 records in the signals table</h2>
+    <table>
+      <tr>
+          <th>Signal ID</th>
+          <th>Name</th>
+          <th>Lat</th>
+          <th>Lon</th>
+      </tr>
+      {% for entry in entries[:10] %}
+      <tr>
+         <td>{{ entry[0] }}</td>
+         <td>{{ entry[1] }}</td>
+         <td>{{ entry[2] }}</td>
+         <td>{{ entry[3] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h2>You can insert new record to the table in database</h2>
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
-        <dt>Title:
-        <dd><input type=text size=30 name="author">
-        <dt>Text:
-        <dd><textarea name=body rows=5 cols=40></textarea>
-        <dd><input type=submit value=Share>
+        <dt>New Signal ID:
+        <dd><input type=text size=30 name=ID>
+        <dt>Name:
+        <dd><input type=text size=30 name=Name>
+          <dt>Lat:
+        <dd><input type=text size=30 name=Lat>
+          <dt>Lon:
+        <dd><input type=text size=30 name=Lon>
+        <dd><input type=submit value=Add>
       </dl>
     </form>
+
   {% endif %}
-  <ul class=entries>
-  {% for entry in entries %}
-    <li><h2>{{ entry.author }}</h2>{{ entry.body }}
-  {% else %}
-    <li><em>Unbelievable.  No entries here so far</em>
-  {% endfor %}
-  </ul>
+
 {% endblock %}

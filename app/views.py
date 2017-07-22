@@ -1,50 +1,64 @@
 #!flask/bin/python
+import os
 from flask import render_template, flash, abort,redirect, request,g,url_for, session, make_response, jsonify
 from app import app_
-from .forms import LoginForm
-import sqlite3
+from flask_googlemaps import GoogleMaps, Map
 import MySQLdb
 
-def connect_db():
-    conn=sqlite3.connect(app_.config['DATABASE'])
-    conn.row_factory = sqlite3.Row #allow column names
-    return conn
+GoogleMaps(app_, key = 'AIzaSyAI-Qv_8HTk3NhCLYbphdWYjyK9OgWhdW8')
 
-def get_db():
-    if not hasattr(g, 'sqlite_db'): # g means global, aplication context instead of request context
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
+def connect_to_cloudsql():
+    # Connect using the unix socket located at
+    # /cloudsql/cloudsql-connection-name.
+    cloudsql_unix_socket = '/cloudsql/'+'euphoric-oath-172818:us-east1:apitestdb'
 
-@app_.teardown_appcontext # Its executed every time the application context tears down
-def close_db(error):
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
+    db = MySQLdb.connect(
+        unix_socket = cloudsql_unix_socket,
+        user = 'root',
+        passwd = 'hadoop',
+        db = 'api_db')
+
+    return db
+
+conn = connect_to_cloudsql()
+c = conn.cursor()
 
 @app_.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
-@app_.route('/index')
+
 @app_.route('/')
+@app_.route('/index')
+def begin():
+    return render_template('base.html')
+
+@app_.route('/entries')
 def show_entries():
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('select * from entries')
+    c.execute('select id,pname,lat,lon from signals order by id ASC')
     entries = c.fetchall()
-    for entry in entries:
-        print(entry['author'], entry['body'])
-    return render_template('show_entries.html',entries = entries)
+    markers = []
+    for row in entries[:10]:
+        markers.append((row[2],row[3],row[1]))
+    mymap = Map(
+        identifier = 'view-side',
+        lat = markers[5][0],
+        lng =  markers[5][1],
+        markers = markers
+    )
+    return render_template('show_entries.html', entries=entries, mymap = mymap)
 
 @app_.route('/add',methods = ['POST'])
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    conn = get_db()
-    c = conn.cursor()
-    c.execute('insert into entries values (?,?)',[request.form['author'], request.form['body']])
+    c.execute("insert into signals (id, pname, lat, lon) \
+               values ('%s','%s', '%s','%s')" \
+              % (request.form['ID'], request.form['Name'], \
+                 request.form['Lat'], request.form['Lon']))
     conn.commit()
     flash('updated')
-    return redirect('/')
+    return redirect('/entries')
 
 @app_.route('/login', methods=['GET', 'POST'])
 def login():
@@ -57,15 +71,11 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return redirect('/')
+            return redirect('/index')
     return render_template('login.html', error=error)
 
 @app_.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
-
-
-
-
+    return redirect('/index')

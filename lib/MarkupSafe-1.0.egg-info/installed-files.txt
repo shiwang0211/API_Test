@@ -7,6 +7,7 @@
 ../markupsafe/_native.pyc
 ../markupsafe/_constants.pyc
 ../markupsafe/__init__.pyc
+../markupsafe/_speedups.so
 ./
 PKG-INFO
 dependency_links.txt

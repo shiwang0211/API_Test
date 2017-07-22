@@ -1,0 +1,17 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+env_variables:
+  CLOUDSQL_CONNECTION_NAME : euphoric-oath-172818:us-east1:apitestdb
+  CLOUDSQL_USER: root
+  CLOUDSQL_PASSWORD: hadoop
+# [START handlers]
+handlers:
+- url: /static
+  static_dir: app/static
+- url: /.*
+  script: run.app_
+# [END handlers]
+libraries:
+- name: MySQLdb
+  version: "latest"

@@ -1,0 +1,17 @@
+cd /home/hadoop/Dropbox/Data\ \Science\ \Study/API_Test/
+
+Local Mode:
+dev_appserver.py app.yaml
+
+Kill Local:
+kill -9 $(lsof -t -i:8080)
+
+Start CloudSQL Proxy:
+./cloud_sql_proxy -dir=/cloudsql &
+
+Deploy:
+gcloud app deploy
+
+Start PyCharm:
+~/pycharm/bin/pycharm.sh
+
