@@ -15,3 +15,4 @@ gcloud app deploy
 Start PyCharm:
 ~/pycharm/bin/pycharm.sh
 
+https://euphoric-oath-172818.appspot.com

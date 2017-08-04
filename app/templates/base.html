@@ -1,35 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title> Welcome to My API</title>
-  {% if mymap %}
-    {{mymap.js}}
-  {% endif %}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script type="text/javascript" src = "{{ url_for('static', filename = 'hello.js') }}"></script>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css')}}">
+	<title> Welcome to My API</title>
+	  {% if mymap %}
+		{{mymap.js}}
+	  {% endif %}
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src = "{{ url_for('static', filename = 'hello.js') }}"></script>
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='bootstrap-min.css')}}">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='jumbotron-narrow.css')}}">
+	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css')}}">
 </head>
 
 
 <body>
-	{% if not session.logged_in %}
-        <h3> Please log in first, user name and password will be provided</h3>
-    	<a href="{{ url_for('login') }}">log in</a>
-  	{% else %}
-    	<a href="{{ url_for('logout') }}">log out</a>
-    <br>
-	    <a href="{{ url_for('show_entries') }}">show records for signals</a>
-  	{% endif %}
+	<div class = "container">
+		<div class="header">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role = "presentation" class = "active"><a href="/">Home</a>
+					</li>
+					{% if not session.logged_in %}
+					<li role = "presentation">
+						<a href="{{ url_for('login') }}">Sign In</a>
+					</li>
+					{% else %}
+					<li role = "presentation">
+						<a href="{{ url_for('logout') }}">Sign Out</a>
+					</li>
+					{% endif %}
+				</ul>
+			</nav>
+			<h3 class="text-muted">My First Python Flask App</h3>
+		</div>
 
-  	{% for message in get_flashed_messages() %}
-    	<div class=flash>{{ message }}</div>
-  	{% endfor %}
+		<div class="jumbotron">
+			<h2>Services</h2>
+			<p class="lead"></p>
+			<p><a class="btn btn-lg btn-success" href="{{ url_for('show_entries') }}"
+				   role="button"> Show Entries</a></p>
+			<p><a class="btn btn-lg btn-success" href="/"
+				   role="button"> To be added</a></p>
+			<p><a class="btn btn-lg btn-success" href="/"
+				   role="button"> To be added</a></p>
+		</div>
+
+		<div class="row marketing">
+			<div class="col-lg-6">
+				{% for message in get_flashed_messages() %}
+				<div class=flash>{{ message }}</div>
+				{% endfor %}
+			</div>
+			<div class="col-lg-6">
+				<h4>Contact</h4>
+				<p>shiwang0211@gmail.com</p>
+			</div>
+		</div>
+
+		{% block body %}
+		{% endblock %}
+
+		<footer class="footer">
+			<p>&copy; Shi Wang 2017</p>
+		</footer>
 
 
-	{% block body %}
-	{% endblock %}
-
-
+	</div>
 </body>
 </html>
 
